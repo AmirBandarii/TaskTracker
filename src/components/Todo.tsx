@@ -13,15 +13,17 @@ const Todo: React.FC = () => {
     context?.setTodo(e.target.value)
   }
   const handleTodoAdd = (): void => {
-    const newTodo: ITodo = {
-      id: Math.random().toString(),
-      task: context?.todo,
-      description: '',
-      mustDo: true,
-      date: formattedDate()
+    if (context?.todo?.trim().length !== undefined && context?.todo?.trim().length > 0) {
+      const newTodo: ITodo = {
+        id: Math.random().toString(),
+        task: context?.todo,
+        description: '',
+        mustDo: true,
+        date: formattedDate()
+      }
+      context?.setTodos([...context?.todos, newTodo])
+      context?.setTodo('')
     }
-    context?.setTodos([...context?.todos, newTodo])
-    context?.setTodo('')
   }
   return (
     <>
@@ -97,7 +99,10 @@ const Todo: React.FC = () => {
                 <button
                   className="bg-emerald-500 text-white active:bg-emerald-600 font-bold  text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                   type="button"
-                  onClick={handleTodoAdd}
+                  onClick={() => {
+                    handleTodoAdd()
+                    context?.setModalShow(context?.modalShow === false)
+                  }}
                 >
                   Add Item
                 </button>

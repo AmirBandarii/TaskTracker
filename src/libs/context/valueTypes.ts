@@ -11,6 +11,8 @@ export interface ContextValues {
   setEditTodo: Dispatch<SetStateAction<string | undefined>>
   isEditTodo: boolean | null
   setIsEditTodo: Dispatch<SetStateAction<boolean | null>>
+  editId: string | null
+  setEditId: Dispatch<SetStateAction<string | null>>
 }
 export interface Props {
   children: ReactNode

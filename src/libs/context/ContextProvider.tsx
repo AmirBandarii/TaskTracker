@@ -9,6 +9,7 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<ITodo[]>([])
   const [editTodo, setEditTodo] = useState<string | undefined>('')
   const [isEditTodo, setIsEditTodo] = useState<boolean | null>(false)
+  const [editId, setEditId] = useState<string | null>(null)
   return (
     <TodoContext.Provider
   value={{
@@ -21,7 +22,9 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
     editTodo,
     setEditTodo,
     isEditTodo,
-    setIsEditTodo
+    setIsEditTodo,
+    editId,
+    setEditId
   }}
   >
       {children}
