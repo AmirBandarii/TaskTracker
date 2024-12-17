@@ -7,10 +7,10 @@ export interface ContextValues {
   setTodos: Dispatch<SetStateAction<ITodo[]>>
   modalShow: boolean | undefined
   setModalShow: Dispatch<SetStateAction<boolean | undefined>>
-  editTodo: string | undefined
-  setEditTodo: Dispatch<SetStateAction<string | undefined>>
-  isEditTodo: boolean | null
-  setIsEditTodo: Dispatch<SetStateAction<boolean | null>>
+  description: string
+  setDescription: Dispatch<SetStateAction<string>>
+  isDescriptionOpen: boolean
+  setIsDescriptionOpen: Dispatch<SetStateAction<boolean>>
 }
 export interface Props {
   children: ReactNode
