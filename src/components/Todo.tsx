@@ -1,34 +1,14 @@
 import React, { useContext } from 'react'
 import { Helmet } from 'react-helmet-async'
 import TodoContext from '../libs/context/TodoContext'
-import { type ITodo } from '../libs/types/todo'
-import { formattedDate } from '../libs/functions/dateNow'
+import { useTodoHandlers } from '../libs/handlers/useTodoHandlers'
+import { errors } from '../libs/messages/errors'
 
 const Todo: React.FC = () => {
+  const { handleChangeTodo, handleChangeDescription, handleTodoAdd } = useTodoHandlers()
   const context = useContext(TodoContext)
-  if (context === undefined) {
-    throw new Error('No Todo context.')
-  }
-  const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    context?.setTodo(e.target.value)
-  }
-  const handleChangeDescription = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
-    context?.setDescription(e.target.value)
-  }
-  const handleTodoAdd = (): void => {
-    if (context?.todo?.trim().length !== undefined && context?.todo?.trim().length > 0) {
-      const newTodo: ITodo = {
-        id: Math.random().toString(),
-        task: context?.todo,
-        description: context?.description.trim() === '' ? '' : context?.description,
-        mustDo: true,
-        date: formattedDate()
-      }
-      context?.setTodos([...context?.todos, newTodo])
-      context?.setTodo('')
-      context.setDescription('')
-    }
-  }
+  if (context == null) throw new Error(errors.ContextExist)
+  const { setModalShow, todo, modalShow } = context
   return (
     <>
       <Helmet>
@@ -39,12 +19,14 @@ const Todo: React.FC = () => {
         />
       </Helmet>
       <main className="flex justify-between">
-        <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
+        <section
+          className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
           <div className="relative w-auto my-6 mx-auto max-w-3xl ">
-            <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-96 bg-warmSand outline-none focus:outline-none ">
-              <div className="flex items-center justify-center p-5  border-b-4 border-solid border-pink rounded-t">
-                <h3 className="text-3xl font-semibold font-roboto">CREATE TASK</h3>
-              </div>
+            <article
+              className="border-0 rounded-lg shadow-lg relative flex flex-col w-96 bg-warmSand outline-none focus:outline-none ">
+              <header className="flex items-center justify-center p-5  border-b-4 border-solid border-pink rounded-t">
+                <h2 className="text-3xl font-semibold font-roboto">CREATE TASK</h2>
+              </header>
               <div className="relative p-6 flex-auto">
                 <form className="grid grid-cols-1 gap-3 ">
                   <label
@@ -56,7 +38,8 @@ const Todo: React.FC = () => {
                   <input
                     id="task"
                     type="text"
-                    value={context?.todo}
+                    aria-label="Add a new task"
+                    value={todo}
                     className="bg-gray-50 border-2 border-pink rounded-lg block p-2.5"
                     onChange={handleChangeTodo}
                     placeholder="ADD YOUR TASK"
@@ -79,6 +62,7 @@ const Todo: React.FC = () => {
                     <input
                       id="must-todo"
                       type="checkbox"
+                      aria-label="must to do"
                       className="w-4 h-4 rounded border-2 border-pink "
                     />
                     <label
@@ -91,12 +75,14 @@ const Todo: React.FC = () => {
                 </form>
               </div>
 
-              <div className="flex items-center justify-end p-6 border-t-4 border-solid border-pink rounded-b">
+              <footer className="flex items-center justify-end p-6 border-t-4 border-solid border-pink rounded-b">
                 <div>
                   <button
                     className="text-red-500 hover:text-pink background-transparent font-bold uppercase px-6 py-2 text-sm outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
                     type="button"
-                    onClick={() => context?.setModalShow(context?.modalShow === false)}
+                    onClick={() => {
+                      setModalShow(modalShow === false)
+                    }}
                   >
                     Close
                   </button>
@@ -106,16 +92,16 @@ const Todo: React.FC = () => {
                   type="button"
                   onClick={() => {
                     handleTodoAdd()
-                    context?.setModalShow(context?.modalShow === false)
+                    setModalShow(modalShow === false)
                   }}
                 >
                   Add Item
                 </button>
-              </div>
-            </div>
+              </footer>
+            </article>
           </div>
-        </div>
-        <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+        </section>
+        <div className="opacity-25 fixed inset-0 z-40 bg-black" aria-hidden="true"></div>
       </main>
     </>
   )

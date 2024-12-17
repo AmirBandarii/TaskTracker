@@ -1,3 +1,4 @@
+import type React from 'react'
 import { type Dispatch, type ReactNode, type SetStateAction } from 'react'
 import { type ITodo } from '../types/todo'
 export interface ContextValues {
@@ -9,8 +10,10 @@ export interface ContextValues {
   setModalShow: Dispatch<SetStateAction<boolean | undefined>>
   description: string
   setDescription: Dispatch<SetStateAction<string>>
-  isDescriptionOpen: boolean
-  setIsDescriptionOpen: Dispatch<SetStateAction<boolean>>
+  isEdit: Record<string, boolean>
+  setIsEdit: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+  isDescription: Record<string, boolean>
+  setIsDescription: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }
 export interface Props {
   children: ReactNode
