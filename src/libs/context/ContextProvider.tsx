@@ -6,25 +6,22 @@ import { type ITodo } from '../types/todo'
 const ContextProvider: React.FC<Props> = ({ children }) => {
   const [modalShow, setModalShow] = useState<boolean | undefined>(false)
   const [todo, setTodo] = useState<string | undefined>('')
+  const [description, setDescription] = useState<string>('')
   const [todos, setTodos] = useState<ITodo[]>([])
-  const [editTodo, setEditTodo] = useState<string | undefined>('')
-  const [isEditTodo, setIsEditTodo] = useState<boolean | null>(false)
-  const [editId, setEditId] = useState<string | null>(null)
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState<boolean>(false)
   return (
     <TodoContext.Provider
   value={{
     todo,
     setTodo,
+    description,
+    setDescription,
     todos,
     setTodos,
     modalShow,
     setModalShow,
-    editTodo,
-    setEditTodo,
-    isEditTodo,
-    setIsEditTodo,
-    editId,
-    setEditId
+    isDescriptionOpen,
+    setIsDescriptionOpen
   }}
   >
       {children}

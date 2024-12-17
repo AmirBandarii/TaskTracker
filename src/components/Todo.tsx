@@ -12,17 +12,21 @@ const Todo: React.FC = () => {
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>): void => {
     context?.setTodo(e.target.value)
   }
+  const handleChangeDescription = (e: React.ChangeEvent<HTMLTextAreaElement>): void => {
+    context?.setDescription(e.target.value)
+  }
   const handleTodoAdd = (): void => {
     if (context?.todo?.trim().length !== undefined && context?.todo?.trim().length > 0) {
       const newTodo: ITodo = {
         id: Math.random().toString(),
         task: context?.todo,
-        description: '',
+        description: context?.description.trim() === '' ? '' : context?.description,
         mustDo: true,
         date: formattedDate()
       }
       context?.setTodos([...context?.todos, newTodo])
       context?.setTodo('')
+      context.setDescription('')
     }
   }
   return (
@@ -69,6 +73,7 @@ const Todo: React.FC = () => {
                     placeholder="ADD ..."
                     id="description"
                     name="description"
+                    onChange={handleChangeDescription}
                   />
                   <div className="flex items-center">
                     <input

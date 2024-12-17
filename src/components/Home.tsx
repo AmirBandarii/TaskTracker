@@ -13,6 +13,7 @@ import Tooltip from '../libs/tooltip/Tooltip'
 const Home: React.FC = () => {
   const context = useContext(TodoContext)
   const [isEdit, setIsEdit] = React.useState<Record<string, boolean>>({})
+  const [isDescription, setIsDescription] = React.useState<Record<string, boolean>>({})
   if (context === null) {
     throw new Error('Some Component must be used within a TodoProvider')
   }
@@ -29,6 +30,9 @@ const Home: React.FC = () => {
   }
   const handleBlur = (id: string): void => {
     setIsEdit((prevEditState) => ({ ...prevEditState, [id]: false }))
+  }
+  const toggleDescription = (id: string): void => {
+    setIsDescription((prevDescriptionState) => ({ ...prevDescriptionState, [id]: !prevDescriptionState[id] }))
   }
   return (
     <div className="bg-goldenSandstone min-h-screen lg:w-full">
@@ -95,7 +99,7 @@ const Home: React.FC = () => {
                       <div
                         className="flex items-center justify-between my-2 border-2 p-2 w-36 lg:w-64 rounded-full border-copperCanyon bg-goldenSandstone">
                         <Tooltip text="Description">
-                        <img className="w-6" src={description} alt="description" />
+                            <img className="w-6" src={description} alt="description" onClick = {() => { toggleDescription(todo.id) }} />
                         </Tooltip>
                         {isEdit[todo.id]
                           ? (
@@ -112,9 +116,33 @@ const Home: React.FC = () => {
                             />
                             )
                           : (
-                          <span className="text-black font-bold lg:ml-2 lg:pl-5" >{todo.task}</span>
+                            <div>
+                              {isDescription[todo.id] && todo.description.trim() !== ''
+                                ? (
+                                  <div className="flex flex-col items-center justify-center text-center">
+                                    <div>
+                                      <div className="text-black font-bold break-words whitespace-normal w-44 pl-14 pr-14">{todo.task}</div>
+                                      <div className="flex-auto items-center text-center item-center">
+                                      <hr className="w-32 mx-auto"/>
+                                      </div>
+                                    </div>
+                                    <div className="flex text-center justify-center w-full h-full">
+                                      <div
+                                        className="break-words whitespace-normal text-slate-700 font-bold w-36 pl-4 pr-4 pb-4 rounded-lg"
+                                      >
+                                        {todo.description}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  )
+                                : (
+                                  <div className="w-24 truncate flex-auto text-center">
+                                  <div className="text-black font-bold">{todo.task}</div>
+                                  </div>
+                                  )}
+                            </div>
                             )}
-                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3">
                           <Tooltip text="Edit">
                             <img className="w-5 cursor-pointer" src={edit} alt="edit" onClick={() => { handleEditClick(todo.id) }
                             } />
