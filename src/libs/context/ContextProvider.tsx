@@ -8,7 +8,8 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
   const [todo, setTodo] = useState<string | undefined>('')
   const [description, setDescription] = useState<string>('')
   const [todos, setTodos] = useState<ITodo[]>([])
-  const [isDescriptionOpen, setIsDescriptionOpen] = useState<boolean>(false)
+  const [isEdit, setIsEdit] = React.useState<Record<string, boolean>>({})
+  const [isDescription, setIsDescription] = React.useState<Record<string, boolean>>({})
   return (
     <TodoContext.Provider
   value={{
@@ -20,8 +21,10 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
     setTodos,
     modalShow,
     setModalShow,
-    isDescriptionOpen,
-    setIsDescriptionOpen
+    isEdit,
+    setIsEdit,
+    isDescription,
+    setIsDescription
   }}
   >
       {children}

@@ -9,31 +9,16 @@ import edit from '../libs/icons/edit.png'
 import trash from '../libs/icons/trash.png'
 import alarm from '../libs/icons/alarm.png'
 import Tooltip from '../libs/tooltip/Tooltip'
+import { errors } from '../libs/messages/errors'
+import { useHomeHandlers } from '../libs/handlers/useHomeHandlers'
 
 const Home: React.FC = () => {
   const context = useContext(TodoContext)
-  const [isEdit, setIsEdit] = React.useState<Record<string, boolean>>({})
-  const [isDescription, setIsDescription] = React.useState<Record<string, boolean>>({})
   if (context === null) {
-    throw new Error('Some Component must be used within a TodoProvider')
+    throw new Error(errors.ContextExist)
   }
-  const removeTodo = (id: string): void => {
-    const remove = context.todos.filter(todo => todo.id !== id)
-    context.setTodos(remove)
-  }
-  const handleEditClick = (id: string): void => {
-    setIsEdit((prevEditState) => ({ ...prevEditState, [id]: !prevEditState[id] }))
-  }
-  const handleChangeEdit = (e: React.ChangeEvent<HTMLInputElement>, todoId: string): void => {
-    const updatedTodos = context.todos.map((todo) => todo.id === todoId ? { ...todo, task: e.target.value } : todo)
-    context.setTodos(updatedTodos)
-  }
-  const handleBlur = (id: string): void => {
-    setIsEdit((prevEditState) => ({ ...prevEditState, [id]: false }))
-  }
-  const toggleDescription = (id: string): void => {
-    setIsDescription((prevDescriptionState) => ({ ...prevDescriptionState, [id]: !prevDescriptionState[id] }))
-  }
+  const { isEdit, isDescription } = context
+  const { removeTodo, handleEditClick, handleBlur, toggleDescription, handleChangeEdit } = useHomeHandlers()
   return (
     <div className="bg-goldenSandstone min-h-screen lg:w-full">
       <Helmet>
@@ -106,9 +91,10 @@ const Home: React.FC = () => {
                             <input
                               id={todo.id}
                               type="text"
+                              aria-label="edit a task"
                               value={todo.task}
                               className=" text-base font-medium text-gray-900 dark:text-white w-36 text-center rounded-lg"
-                              placeholder="ADD YOUR TASK"
+                              placeholder="editTASK"
                               name="task"
                               onChange={(e) => { handleChangeEdit(e, todo.id) }}
                               onBlur={() => { handleBlur(todo.id) }}
@@ -161,20 +147,6 @@ const Home: React.FC = () => {
             </div>
             <div className="w-24 h-44 rounded-lg border-4 border-copperCanyon bg-apricotBlush lg:w-96">
               <h2 className="font-bold text-lg text-center">Done</h2>
-              <hr className="mt-2 border-copperCanyon border-2 mx-4" />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-5 mt-5 lg:grid-cols-3">
-            <div className="w-96 h-36 rounded-lg border-4 border-copperCanyon bg-apricotBlush lg:h-40 ">
-              <h2 className="font-bold text-lg text-center">Must do</h2>
-              <hr className="mt-2 border-copperCanyon border-2 mx-4" />
-            </div>
-            <div className="w-96 h-36 rounded-lg border-4 border-copperCanyon bg-apricotBlush lg:h-40">
-              <h2 className="font-bold text-lg text-center">Notes</h2>
-              <hr className="mt-2 border-copperCanyon border-2 mx-4" />
-            </div>
-            <div className="w-96 h-36 rounded-lg border-4 border-copperCanyon bg-apricotBlush lg:h-40">
-              <h2 className="font-bold text-lg text-center">Mood of a day</h2>
               <hr className="mt-2 border-copperCanyon border-2 mx-4" />
             </div>
           </div>
