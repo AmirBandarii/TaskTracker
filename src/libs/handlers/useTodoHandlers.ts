@@ -23,7 +23,7 @@ export const useTodoHandlers = (): ITodoHandlers => {
         id: Math.random().toString(),
         task: todo,
         description: context?.description.trim() === '' ? '' : context?.description,
-        mustDo: true,
+        status: 'TASK',
         date: formattedDate()
       }
       setTodos([...todos, newTodo])
