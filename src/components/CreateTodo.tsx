@@ -4,7 +4,7 @@ import TodoContext from '../libs/context/TodoContext'
 import { useTodoHandlers } from '../libs/handlers/useTodoHandlers'
 import { errors } from '../libs/messages/errors'
 
-const Todo: React.FC = () => {
+const CreateTodo: React.FC = () => {
   const { handleChangeTodo, handleChangeDescription, handleTodoAdd } = useTodoHandlers()
   const context = useContext(TodoContext)
   if (context == null) throw new Error(errors.ContextExist)
@@ -106,4 +106,4 @@ const Todo: React.FC = () => {
     </>
   )
 }
-export default Todo
+export default CreateTodo
