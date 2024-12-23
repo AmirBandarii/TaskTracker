@@ -1,15 +1,14 @@
-import React from 'react'
-import { type ITodo } from '../libs/types/todo'
+import React, { type FC } from 'react'
+import type { ITodo } from '../libs/types/todo'
 import alarm from '../libs/icons/alarm.png'
 import Tooltip from '../libs/tooltip/Tooltip'
 import description from '../libs/icons/description.png'
 import edit from '../libs/icons/edit.png'
 import trash from '../libs/icons/trash.png'
+import { useDraggable } from '@dnd-kit/core'
 
-interface ColumnProps {
+interface ITaskCardProps {
   id: string
-  title: string
-  todos: ITodo[]
   isEdit: Record<string, boolean>
   isDescription: Record<string, boolean>
   toggleDescription: (id: string) => void
@@ -17,28 +16,29 @@ interface ColumnProps {
   handleChangeEdit: (e: React.ChangeEvent<HTMLInputElement>, id: string) => void
   handleBlur: (id: string) => void
   removeTodo: (id: string) => void
+  todo: ITodo
 }
 
-const SectionContainer: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
-  <div className=" flex  flex-col  flex-grow  w-96 pb-16  h-auto min-h-80 rounded-lg border-4 border-copperCanyon bg-apricotBlush">
-    <h2 className="font-bold text-lg text-center">{title}</h2>
-    <hr className="mt-2 border-copperCanyon border-2 mx-4" />
-    <div className="flex flex-col justify-center items-center">{children}</div>
-  </div>
-)
-
-const Columns: React.FC<ColumnProps> = ({
-  id,
-  title,
-  todos,
-  isEdit,
-  handleEditClick,
-  handleChangeEdit,
-  toggleDescription,
-  handleBlur,
-  removeTodo,
-  isDescription
-}) => {
+const TaskCard: FC< ITaskCardProps> = (
+  {
+    id,
+    isEdit,
+    handleEditClick,
+    handleChangeEdit,
+    toggleDescription,
+    isDescription,
+    handleBlur,
+    removeTodo,
+    todo
+  }) => {
+  const { attributes, listeners, setNodeRef, transform } = useDraggable({
+    id: todo.id
+  })
+  const style = transform !== null && transform !== undefined
+    ? {
+        transform: `translate(${transform.x}px, ${transform.y}px)`
+      }
+    : undefined
   const renderTodoContent = (todo: ITodo): React.JSX.Element | null => {
     if (id === 'TIME') {
       return (
@@ -50,7 +50,7 @@ const Columns: React.FC<ColumnProps> = ({
     }
     if (id === 'TASK') {
       return (
-        <div className="flex items-center justify-between my-2 border-2 p-2 w-64 rounded-full border-copperCanyon bg-goldenSandstone">
+        <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="flex items-center justify-between my-2 border-2 p-2 w-64 rounded-full border-copperCanyon bg-goldenSandstone">
           <Tooltip text="Description">
             <img
               className="w-6 cursor-pointer"
@@ -127,18 +127,12 @@ const Columns: React.FC<ColumnProps> = ({
     }
     return null
   }
-
   return (
-    <div className=" flex flex-row flex-1 gap-4 mt-5 justify-center items-center">
-      <SectionContainer title={title}>
-        <div >
-        {todos.map((todo) => (
-          <div key={todo.id}>{renderTodoContent(todo)}</div>
-        ))}
-        </div>
-      </SectionContainer>
+    <div>
+      <div>{renderTodoContent(todo)}
+      </div>
     </div>
   )
 }
 
-export default Columns
+export default TaskCard

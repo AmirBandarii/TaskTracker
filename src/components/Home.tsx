@@ -2,20 +2,33 @@ import React, { useContext } from 'react'
 import { Helmet } from 'react-helmet-async'
 import Logo from '../libs/icons/logo/logo'
 import newTask from '../libs/icons/newTask.png'
-import Todo from './Todo'
+import CreateTodo from './CreateTodo'
 import TodoContext from '../libs/context/TodoContext'
 import { errors } from '../libs/messages/errors'
 import { useHomeHandlers } from '../libs/handlers/useHomeHandlers'
 import { COLUMNS } from '../libs/objects/columns'
-import Columns from './Columns'
+import Columns from './columns/Columns'
+import { type DragEndEvent } from '@dnd-kit/core'
+import { type ITodo } from '../libs/types/todo'
+import { DndContext } from '@dnd-kit/core'
 
 const Home: React.FC = () => {
   const context = useContext(TodoContext)
   if (context === null) {
     throw new Error(errors.ContextExist)
   }
-  const { isEdit, isDescription, todos } = context
+  const { isEdit, isDescription, todos, setTodos } = context
   const { removeTodo, handleEditClick, handleBlur, toggleDescription, handleChangeEdit } = useHomeHandlers()
+
+  function handleDragEnd (event: DragEndEvent): void {
+    const { active, over } = event
+    if (over === null || over === undefined) return
+
+    const taskId = active.id as string
+    const newStatus = over.id as ITodo['status']
+    setTodos(() => todos.map((todo => todo.id === taskId ? { ...todo, status: newStatus } : todo)))
+  }
+
   return (
     <div className="bg-goldenSandstone min-h-screen lg:w-full">
       <Helmet>
@@ -46,29 +59,31 @@ const Home: React.FC = () => {
               }}>
                 <img className="w-12 lg:w-16 hover:w-20" src={newTask} alt="New Task Icon" />
               </button>
-              {(context.modalShow === true) ? (<Todo />) : null}
+              {(context.modalShow === true) ? (<CreateTodo />) : null}
             </div>
           </div>
           <div></div>
           <div></div>
         </section>
         <div className={' grid auto-cols-auto grid-flow-col justify-center items-center gap-x-4 flex-wrap flex-grow '}>
-        {COLUMNS.map(column => {
-          return (
-            <div key={column.id}>
-           <Columns
-               id={column.id}
-               title = {column.title}
-               todos={todos}
-               handleBlur={handleBlur}
-               handleChangeEdit={handleChangeEdit}
-               handleEditClick={handleEditClick}
-               isDescription={isDescription}
-               isEdit={isEdit} removeTodo={removeTodo}
-               toggleDescription={toggleDescription}/>
-            </div>
-          )
-        })}
+          <DndContext onDragEnd={handleDragEnd}>
+            {COLUMNS.map(column => {
+              return (
+                <div key={column.id}>
+                  <Columns
+                    id={column.id}
+                    title = {column.title}
+                    todos={todos}
+                    handleBlur={handleBlur}
+                    handleChangeEdit={handleChangeEdit}
+                    handleEditClick={handleEditClick}
+                    isDescription={isDescription}
+                    isEdit={isEdit} removeTodo={removeTodo}
+                    toggleDescription={toggleDescription}/>
+                </div>
+              )
+            })}
+          </DndContext>
         </div>
       </main>
     </div>
