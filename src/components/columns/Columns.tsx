@@ -2,6 +2,7 @@ import React from 'react'
 import { type ITodo } from '../../libs/types/todo'
 import TodoContent from './TodoContent'
 import TaskCard from '../TaskCard'
+import { useDroppable } from '@dnd-kit/core'
 
 interface ColumnProps {
   id: string
@@ -28,12 +29,29 @@ const Columns: React.FC<ColumnProps> =
     removeTodo,
     isDescription
   }) => {
+    const { isOver, setNodeRef } = useDroppable({
+      id
+    })
+    const style = {
+      opacity: isOver ? 0.5 : 1
+    }
+    const filteredTodos = (todos.filter((todo) => todo.status === id))
     return (
-    <div className=" flex flex-row flex-1 gap-4 mt-5 justify-center items-center">
+    <div className=" flex flex-row gap-4 mt-5 justify-center items-center">
       <TodoContent title={title}>
-        <div>
-          {todos.map((todo) => (
-            <TaskCard key={todo.id} handleBlur={handleBlur} handleChangeEdit={handleChangeEdit} handleEditClick={handleEditClick} id={id} isDescription={isDescription} isEdit={isEdit} removeTodo={removeTodo} todo={todo} toggleDescription={toggleDescription}/>
+        <div ref={setNodeRef} style={style}>
+          {filteredTodos.map((todo) => (
+            <TaskCard
+              key={todo.id}
+              handleBlur={handleBlur}
+              handleChangeEdit={handleChangeEdit}
+              handleEditClick={handleEditClick}
+              id={id}
+              isDescription={isDescription}
+              isEdit={isEdit}
+              removeTodo={removeTodo}
+              todo={todo}
+              toggleDescription={toggleDescription}/>
           ))}
         </div>
       </TodoContent>

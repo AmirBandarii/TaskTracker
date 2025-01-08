@@ -1,6 +1,5 @@
 import React from 'react'
-import './App.css'
-import Home from './components/Home'
+import Global from './components/global/Global'
 import ContextProvider from './libs/context/ContextProvider'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
@@ -9,7 +8,7 @@ const App: React.FC = () => {
     <ContextProvider>
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home/>} />
+          <Route path="/" element={<Global/>} />
         </Routes>
       </BrowserRouter>
     </ContextProvider>
