@@ -8,9 +8,17 @@ import { errors } from '../libs/messages/errors'
 import { useHomeHandlers } from '../libs/handlers/useHomeHandlers'
 import { COLUMNS } from '../libs/objects/columns'
 import Columns from './columns/Columns'
-import { type DragEndEvent } from '@dnd-kit/core'
+import {
+  closestCorners,
+  DndContext,
+  PointerSensor,
+  useSensors,
+  useSensor,
+  type DragEndEvent,
+  TouchSensor
+} from '@dnd-kit/core'
 import { type ITodo } from '../libs/types/todo'
-import { DndContext } from '@dnd-kit/core'
+// import { arrayMove } from '@dnd-kit/sortable'
 
 const Home: React.FC = () => {
   const context = useContext(TodoContext)
@@ -19,19 +27,50 @@ const Home: React.FC = () => {
   }
   const { isEdit, isDescription, todos, setTodos } = context
   const { removeTodo, handleEditClick, handleBlur, toggleDescription, handleChangeEdit } = useHomeHandlers()
-  const updateTaskStatus = (todoId: string, newStatus: string): void => {
-    setTodos((prevTodos) => prevTodos.map((todo) => todo.id === todoId ? { ...todo, status: newStatus } : todo))
-  }
 
-  function handleDragEnd (event: DragEndEvent): void {
+  // const getTaskPos = (id: UniqueIdentifier): number => todos.findIndex((todo) => todo.id === id)
+  /*
+  const handleDragEnd = (event: DragEndEvent): void => {
     const { active, over } = event
     if (over === null || over === undefined) return
+    setTodos((todo) => {
+      const originalPos = getTaskPos(active.id)
+      const newPos = getTaskPos(over.id)
+      return arrayMove(todo, originalPos, newPos)
+    })
+   */
 
+  const handleDragEnd = (event: DragEndEvent): void => {
+    const { active, over } = event
+    if (over == null) return
+    if (active.id === over.id) return
     const taskId = active.id as string
     const newStatus = over.id as ITodo['status']
-    updateTaskStatus(taskId, newStatus)
-    setTodos(() => todos.map((todo => todo.id === taskId ? { ...todo, status: newStatus } : todo)))
+    const validStatuses: Array<ITodo['status']> = ['TASK', 'DONE', 'TIME'] // Example statuses
+
+    if (!validStatuses.includes(newStatus)) {
+      return
+    }
+    setTodos((prevTodos) =>
+      prevTodos.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              status: newStatus
+            }
+          : task
+      )
+    )
   }
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5
+      }
+    })
+  )
 
   return (
     <div>
@@ -70,7 +109,11 @@ const Home: React.FC = () => {
           <div></div>
         </section>
         <div className={' grid auto-cols-auto grid-flow-col justify-center items-center gap-x-4 '}>
-          <DndContext onDragEnd={handleDragEnd}>
+          <DndContext
+            collisionDetection={closestCorners}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+          >
             {COLUMNS.map(column => {
               return (
                 <div key={column.id}>
@@ -83,7 +126,8 @@ const Home: React.FC = () => {
                     handleEditClick={handleEditClick}
                     isDescription={isDescription}
                     isEdit={isEdit} removeTodo={removeTodo}
-                    toggleDescription={toggleDescription}/>
+                    toggleDescription={toggleDescription}>
+                  </Columns>
                 </div>
               )
             })}

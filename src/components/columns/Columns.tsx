@@ -2,7 +2,7 @@ import React from 'react'
 import { type ITodo } from '../../libs/types/todo'
 import TodoContent from './TodoContent'
 import TaskCard from '../TaskCard'
-import { useDroppable } from '@dnd-kit/core'
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 
 interface ColumnProps {
   id: string
@@ -29,17 +29,12 @@ const Columns: React.FC<ColumnProps> =
     removeTodo,
     isDescription
   }) => {
-    const { isOver, setNodeRef } = useDroppable({
-      id
-    })
-    const style = {
-      opacity: isOver ? 0.5 : 1
-    }
     const filteredTodos = (todos.filter((todo) => todo.status === id))
     return (
     <div className=" flex flex-row gap-4 mt-5 justify-center items-center">
-      <TodoContent title={title}>
-        <div ref={setNodeRef} style={style}>
+      <TodoContent id={id} title={title}>
+        <SortableContext items={todos} strategy={verticalListSortingStrategy}>
+        <div>
           {filteredTodos.map((todo) => (
             <TaskCard
               key={todo.id}
@@ -54,6 +49,7 @@ const Columns: React.FC<ColumnProps> =
               toggleDescription={toggleDescription}/>
           ))}
         </div>
+        </SortableContext>
       </TodoContent>
     </div>
     )

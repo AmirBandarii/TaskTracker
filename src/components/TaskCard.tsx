@@ -5,8 +5,8 @@ import Tooltip from '../libs/tooltip/Tooltip'
 import description from '../libs/icons/description.png'
 import edit from '../libs/icons/edit.png'
 import trash from '../libs/icons/trash.png'
+// import { useSortable } from '@dnd-kit/sortable'
 import { useDraggable } from '@dnd-kit/core'
-
 interface ITaskCardProps {
   id: string
   isEdit: Record<string, boolean>
@@ -31,14 +31,21 @@ const TaskCard: FC< ITaskCardProps> = (
     removeTodo,
     todo
   }) => {
+  // const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: todo.id })
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: todo.id
   })
-  const style = transform !== null && transform !== undefined
+  /*
+  const style = {
+    transform: CSS.Transform.toString(transform)
+  }
+   */
+  const style = (transform != null)
     ? {
         transform: `translate(${transform.x}px, ${transform.y}px)`
       }
     : undefined
+
   const renderTodoContent = (todo: ITodo): React.JSX.Element | null => {
     if (id === 'TIME') {
       return (
@@ -48,9 +55,9 @@ const TaskCard: FC< ITaskCardProps> = (
         </div>
       )
     }
-    if (id === 'TASK') {
+    if (id === 'TASK' || id === 'DONE') {
       return (
-        <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="flex items-center justify-between my-2 cursor-grab border-2 p-2 sm:w-44 w-64 rounded-full border-copperCanyon bg-goldenSandstone">
+        <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="flex items-center justify-between my-2 cursor-grab border-2 p-2 md:w-44 lg:w-64 sm:w-44 w-64 rounded-full border-copperCanyon bg-goldenSandstone touch-none">
           <Tooltip text="Description">
             <img
               className="w-6 cursor-pointer "
@@ -104,7 +111,7 @@ const TaskCard: FC< ITaskCardProps> = (
           <div className="flex items-center gap-3 cursor-pointer">
             <Tooltip text="Edit">
               <img
-                className="w-5 z-50"
+                className="w-5 "
                 src={edit}
                 alt="edit"
                 onClick={() => { handleEditClick(todo.id) }}
@@ -121,9 +128,6 @@ const TaskCard: FC< ITaskCardProps> = (
           </div>
         </div>
       )
-    }
-    if (id === 'DONE') {
-      return <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="text-black font-bold"></div>
     }
     return null
   }
