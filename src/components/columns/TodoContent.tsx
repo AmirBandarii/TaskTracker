@@ -19,16 +19,12 @@ const TodoContent: FC<{ title: string, id: string, children: React.ReactNode }> 
         shadow-[0_8px_30px_rgb(0,0,0,0.04)]
       `}
     >
-      {/* Visual Indicator of the Column Header */}
       <div className="p-5 flex flex-col items-center">
         <h2 className="font-extrabold text-slate-700 text-lg tracking-tight uppercase">
           {title}
         </h2>
-        {/* Modern alternative to <hr />: A small centered accent bar */}
         <div className="w-8 h-1 bg-orange-400 rounded-full mt-2" />
       </div>
-
-      {/* Task List Container */}
       <div className="flex flex-col px-4 gap-4">
         {children}
       </div>

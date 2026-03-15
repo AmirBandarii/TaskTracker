@@ -1,11 +1,7 @@
 import React, { type FC, useContext } from 'react'
 import type { ITodo } from '../libs/types/todo'
 import Tooltip from '../libs/tooltip/Tooltip'
-import descriptionIcon from '../libs/icons/description.png'
-import editIcon from '../libs/icons/edit.png'
-import trashIcon from '../libs/icons/trash.png'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { FileSearchCorner, SquarePen, Shredder } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { errors } from '../libs/messages/errors'
 import TodoContext from '../libs/context/TodoContext'
@@ -28,21 +24,9 @@ const TaskCard: FC<ITaskCardProps> = ({
 }) => {
   const context = useContext(TodoContext)
   if (context === null) throw new Error(errors.ContextExist)
-
-  // Drag and Drop Hook
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: todo.id })
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.3 : 1
-  }
-
-  // --- Specialized Render for "TIME" Column ---
-  if (id === 'TIME') {
+  if (id === 'Active') {
     return (
       <div
-        ref={setNodeRef} style={style} {...attributes} {...listeners}
         className="group flex items-center justify-between p-4 rounded-2xl bg-blue-50/50 border border-blue-200 backdrop-blur-sm shadow-sm hover:shadow-md transition-all cursor-grab"
       >
         <div className="flex flex-col">
@@ -55,14 +39,8 @@ const TaskCard: FC<ITaskCardProps> = ({
       </div>
     )
   }
-
-  // --- Main Task Card (TASK / DONE) ---
   return (
     <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
       className={`
         group relative w-full bg-white rounded-[1.5rem] p-4 
         border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-200 
@@ -71,7 +49,6 @@ const TaskCard: FC<ITaskCardProps> = ({
       `}
     >
       <div className="flex flex-col gap-3">
-        {/* Top Row: Actions & Input */}
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 overflow-hidden">
             <Tooltip text="Description">
@@ -79,7 +56,7 @@ const TaskCard: FC<ITaskCardProps> = ({
                 onClick={(e) => { e.stopPropagation(); toggleDescription(todo.id) }}
                 className="p-1 hover:bg-orange-50 rounded-lg transition-colors"
               >
-                <img src={descriptionIcon} alt="desc" className="w-5 h-5 opacity-60 hover:opacity-100" />
+                <FileSearchCorner className="w-5 h-5 opacity-60 hover:opacity-100" />
               </button>
             </Tooltip>
 
@@ -99,14 +76,12 @@ const TaskCard: FC<ITaskCardProps> = ({
               </h3>
                 )}
           </div>
-
-          {/* Quick Actions - Only visible on hover on desktop */}
           <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button onClick={(e) => { e.stopPropagation(); handleEditClick(todo.id) }} className="p-1.5 hover:bg-slate-100 rounded-full">
-              <img src={editIcon} alt="edit" className="w-4 h-4 opacity-50 hover:opacity-100" />
+              <SquarePen className="w-4 h-4 opacity-50 hover:opacity-100" />
             </button>
             <button onClick={(e) => { e.stopPropagation(); removeTodo(todo.id) }} className="p-1.5 hover:bg-red-50 rounded-full">
-              <img src={trashIcon} alt="delete" className="w-4 h-4 opacity-50 hover:opacity-100" />
+              <Shredder className="w-4 h-4 opacity-50 hover:opacity-100" />
             </button>
           </div>
         </div>
@@ -127,8 +102,6 @@ const TaskCard: FC<ITaskCardProps> = ({
           )}
         </AnimatePresence>
       </div>
-
-      {/* Modern Status Badge (Optional) */}
       {id === 'DONE' && (
         <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg">
           COMPLETED

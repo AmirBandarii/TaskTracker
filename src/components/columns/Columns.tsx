@@ -30,7 +30,6 @@ const Columns: React.FC<ColumnProps> = ({
   removeTodo,
   isDescription
 }) => {
-  // Logic: Only show tasks that belong to this column's status
   const filteredTodos = todos.filter((todo) => todo.status === id)
 
   return (

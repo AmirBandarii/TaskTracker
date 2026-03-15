@@ -32,10 +32,9 @@ const CreateTodo: React.FC = () => {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation() }}
           className="relative w-full max-w-md overflow-hidden bg-white/90 backdrop-blur-xl rounded-[2.5rem] shadow-2xl border border-white/20"
         >
-          {/* Decorative Header Gradient */}
           <div className="h-2 w-full bg-gradient-to-r from-orange-400 via-pink-400 to-copperCanyon" />
 
           <header className="px-8 pt-8 pb-4">

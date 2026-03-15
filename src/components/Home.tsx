@@ -2,13 +2,13 @@ import React, { useContext } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../libs/icons/logo/logo'
-import newTask from '../libs/icons/newTask.png'
 import CreateTodo from './CreateTodo'
 import TodoContext from '../libs/context/TodoContext'
 import { errors } from '../libs/messages/errors'
 import { useHomeHandlers } from '../libs/handlers/useHomeHandlers'
 import { COLUMNS } from '../libs/objects/columns'
 import Columns from './columns/Columns'
+import { ClipboardPlus } from 'lucide-react'
 import {
   closestCorners,
   DndContext,
@@ -69,8 +69,7 @@ const Home: React.FC = () => {
       </Helmet>
 
       <main className="max-w-7xl mx-auto p-4 md:p-8">
-        {/* Modern Header */}
-        <header className="flex justify-between items-center mb-10 p-5 bg-white/30 backdrop-blur-md rounded-3xl border border-white/20 shadow-sm">
+        <header className="flex justify-between items-center mb-10 p-5 bg-white/30 backdrop-blur-md rounded-3xl border border-white/20 ">
           <div className="flex gap-4 items-center">
             <motion.div
               whileHover={{ rotate: 10 }}
@@ -91,20 +90,23 @@ const Home: React.FC = () => {
           </div>
         </header>
 
-        {/* Action Section */}
         <section className="relative mb-10 flex flex-col items-center">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 1.10 }}
             type="button"
             onClick={() => { setModalShow(modalShow === false) }}
-            className="group relative flex items-center justify-center p-1 rounded-full bg-slate-900 shadow-2xl transition-all"
+            className="group relative flex items-center justify-center p-3 rounded-full bg-white/30 hover:bg-white/90 transition-all"
           >
+            <ClipboardPlus className="size-12 " />
+
+            {/*
             <img
               className="w-14 h-14 md:w-16 md:h-16 invert group-hover:rotate-90 transition-transform duration-300"
               src={newTask}
               alt="New Task"
             />
+            */}
           </motion.button>
 
           <AnimatePresence>
@@ -121,7 +123,6 @@ const Home: React.FC = () => {
           </AnimatePresence>
         </section>
 
-        {/* Kanban Board Layout */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 overflow-x-auto pb-10">
           <DndContext
             collisionDetection={closestCorners}
