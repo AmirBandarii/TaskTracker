@@ -5,15 +5,33 @@ const TodoContent: FC<{ title: string, id: string, children: React.ReactNode }> 
   const { isOver, setNodeRef } = useDroppable({
     id
   })
-  const style = {
-    opacity: isOver ? 0.5 : 1
-  }
 
   return (
-    <div ref={setNodeRef} style={style} className=" flex  flex-col sm:w-48 md:w-64 lg:w-80  w-96 pb-16  h-auto sm:min-h-80 md:min-h-96 rounded-lg border-4 border-copperCanyon bg-apricotBlush ">
-      <h2 className="font-bold text-lg text-center cursor-grab">{title}</h2>
-      <hr className="mt-2 border-copperCanyon border-2 mx-4" />
-      <div className="flex flex-col justify-center items-center">{children}</div>
+    <div
+      ref={setNodeRef}
+      className={`
+        flex flex-col w-full min-h-[400px] pb-10 rounded-[2rem] 
+        transition-all duration-300 ease-in-out
+        ${isOver
+        ? 'bg-orange-100/50 scale-[1.02] ring-2 ring-orange-300 ring-dashed'
+        : 'bg-white/40 backdrop-blur-sm border border-white/20'
+      }
+        shadow-[0_8px_30px_rgb(0,0,0,0.04)]
+      `}
+    >
+      {/* Visual Indicator of the Column Header */}
+      <div className="p-5 flex flex-col items-center">
+        <h2 className="font-extrabold text-slate-700 text-lg tracking-tight uppercase">
+          {title}
+        </h2>
+        {/* Modern alternative to <hr />: A small centered accent bar */}
+        <div className="w-8 h-1 bg-orange-400 rounded-full mt-2" />
+      </div>
+
+      {/* Task List Container */}
+      <div className="flex flex-col px-4 gap-4">
+        {children}
+      </div>
     </div>
   )
 }

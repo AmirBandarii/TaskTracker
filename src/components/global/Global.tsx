@@ -1,15 +1,16 @@
 import React from 'react'
 import Home from '../Home'
-import './mobile.css'
 import Mobile from './mobile/Mobile'
 
 const Global: React.FC = () => {
   return (
-    <div>
-      <div className="desktop-only">
+    <div className="min-h-screen bg-goldenSandstone">
+
+      <div className="hidden md:block">
         <Home />
       </div>
-      <div className="mobile-only">
+
+      <div className="block md:hidden">
         <Mobile />
       </div>
     </div>

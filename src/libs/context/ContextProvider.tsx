@@ -10,6 +10,7 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
   const [todos, setTodos] = useState<ITodo[]>([])
   const [isEdit, setIsEdit] = React.useState<Record<string, boolean>>({})
   const [isDescription, setIsDescription] = React.useState<Record<string, boolean>>({})
+  const [isSameColumn, setIsSameColumn] = React.useState<boolean>(false)
   return (
     <TodoContext.Provider
   value={{
@@ -24,7 +25,9 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
     isEdit,
     setIsEdit,
     isDescription,
-    setIsDescription
+    setIsDescription,
+    isSameColumn,
+    setIsSameColumn
   }}
   >
       {children}
