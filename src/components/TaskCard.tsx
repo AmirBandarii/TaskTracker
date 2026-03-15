@@ -50,10 +50,10 @@ const TaskCard: FC< ITaskCardProps> = (
     }
     if (id === 'TASK') {
       return (
-        <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="flex items-center justify-between my-2 border-2 p-2 w-64 rounded-full border-copperCanyon bg-goldenSandstone">
+        <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="flex items-center justify-between my-2 cursor-grab border-2 p-2 sm:w-44 w-64 rounded-full border-copperCanyon bg-goldenSandstone">
           <Tooltip text="Description">
             <img
-              className="w-6 cursor-pointer"
+              className="w-6 cursor-pointer "
               src={description}
               alt="description"
               onClick={() => { toggleDescription(todo.id) }}
@@ -101,10 +101,10 @@ const TaskCard: FC< ITaskCardProps> = (
                     )}
               </div>
               )}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer">
             <Tooltip text="Edit">
               <img
-                className="w-5 cursor-pointer"
+                className="w-5 z-50"
                 src={edit}
                 alt="edit"
                 onClick={() => { handleEditClick(todo.id) }}
@@ -112,7 +112,7 @@ const TaskCard: FC< ITaskCardProps> = (
             </Tooltip>
             <Tooltip text="Delete">
               <img
-                className="w-5 cursor-pointer"
+                className="w-5 "
                 src={trash}
                 alt="trash"
                 onClick={() => { removeTodo(todo.id) }}
@@ -123,7 +123,7 @@ const TaskCard: FC< ITaskCardProps> = (
       )
     }
     if (id === 'DONE') {
-      return <div className="text-black font-bold"></div>
+      return <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="text-black font-bold"></div>
     }
     return null
   }

@@ -19,6 +19,9 @@ const Home: React.FC = () => {
   }
   const { isEdit, isDescription, todos, setTodos } = context
   const { removeTodo, handleEditClick, handleBlur, toggleDescription, handleChangeEdit } = useHomeHandlers()
+  const updateTaskStatus = (todoId: string, newStatus: string): void => {
+    setTodos((prevTodos) => prevTodos.map((todo) => todo.id === todoId ? { ...todo, status: newStatus } : todo))
+  }
 
   function handleDragEnd (event: DragEndEvent): void {
     const { active, over } = event
@@ -26,16 +29,17 @@ const Home: React.FC = () => {
 
     const taskId = active.id as string
     const newStatus = over.id as ITodo['status']
+    updateTaskStatus(taskId, newStatus)
     setTodos(() => todos.map((todo => todo.id === taskId ? { ...todo, status: newStatus } : todo)))
   }
 
   return (
-    <div className="bg-goldenSandstone min-h-screen lg:w-full">
+    <div>
       <Helmet>
         <title>Home</title>
         <meta name="description" content="You can elegantly organize your tasks, manage them with precision, and effortlessly track their completion status"/>
       </Helmet>
-      <main className="p-5">
+      <main className="p-5 bg-goldenSandstone min-h-screen lg:w-full">
         <header className="flex justify-between items-center ">
           <div className="flex gap-3 items-center">
             <div>
@@ -65,7 +69,7 @@ const Home: React.FC = () => {
           <div></div>
           <div></div>
         </section>
-        <div className={' grid auto-cols-auto grid-flow-col justify-center items-center gap-x-4 flex-wrap flex-grow '}>
+        <div className={' grid auto-cols-auto grid-flow-col justify-center items-center gap-x-4 '}>
           <DndContext onDragEnd={handleDragEnd}>
             {COLUMNS.map(column => {
               return (
