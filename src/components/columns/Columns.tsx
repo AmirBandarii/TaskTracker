@@ -4,6 +4,7 @@ import TodoContent from './TodoContent'
 import TaskCard from '../TaskCard'
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable'
 import { motion } from 'framer-motion'
+import { useDroppable } from '@dnd-kit/core'
 
 interface ColumnProps {
   id: string
@@ -31,10 +32,13 @@ const Columns: React.FC<ColumnProps> = ({
   isDescription
 }) => {
   const filteredTodos = todos.filter((todo) => todo.status === id)
-
+  const { setNodeRef } = useDroppable({ id })
   return (
-    <div className="flex flex-col w-full min-w-[300px] max-w-sm">
-      {/* Column Header Area */}
+    <SortableContext
+      items={filteredTodos.map(todo => todo.id)}
+      strategy={verticalListSortingStrategy}
+    >
+    <div ref={setNodeRef} className="flex flex-col w-full min-w-[300px] max-w-sm">
       <div className="flex items-center justify-between mb-4 px-2">
         <div className="flex items-center gap-2">
           <h2 className="text-sm font-bold uppercase tracking-widest text-slate-500">
@@ -47,7 +51,6 @@ const Columns: React.FC<ColumnProps> = ({
         <div className="h-1 w-12 bg-gradient-to-r from-orange-400 to-transparent rounded-full" />
       </div>
 
-      {/* Modernized Container with glass effect */}
       <TodoContent id={id} title={title}>
         <div className="min-h-[500px] rounded-3xl transition-colors">
           <SortableContext
@@ -64,6 +67,7 @@ const Columns: React.FC<ColumnProps> = ({
                   exit={{ opacity: 0, scale: 0.95 }}
                 >
                   <TaskCard
+                    key = {todo.id}
                     handleBlur={handleBlur}
                     handleChangeEdit={handleChangeEdit}
                     handleEditClick={handleEditClick}
@@ -77,7 +81,6 @@ const Columns: React.FC<ColumnProps> = ({
                 </motion.div>
               ))}
 
-              {/* Empty State Illustration/Placeholder */}
               {filteredTodos.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-12 border-2 border-dashed border-slate-300/40 rounded-3xl">
                   <p className="text-slate-400 text-sm font-medium italic">Empty</p>
@@ -88,6 +91,7 @@ const Columns: React.FC<ColumnProps> = ({
         </div>
       </TodoContent>
     </div>
+    </SortableContext>
   )
 }
 
