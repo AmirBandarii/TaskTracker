@@ -5,6 +5,8 @@ import { FileSearchCorner, SquarePen, Shredder } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { errors } from '../libs/messages/errors'
 import TodoContext from '../libs/context/TodoContext'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface ITaskCardProps {
   id: string
@@ -23,24 +25,30 @@ const TaskCard: FC<ITaskCardProps> = ({
   toggleDescription, isDescription, handleBlur, removeTodo, todo
 }) => {
   const context = useContext(TodoContext)
-  if (context === null) throw new Error(errors.ContextExist)
-  if (id === 'Active') {
-    return (
-      <div
-        className="group flex items-center justify-between p-4 rounded-2xl bg-blue-50/50 border border-blue-200 backdrop-blur-sm shadow-sm hover:shadow-md transition-all cursor-grab"
-      >
-        <div className="flex flex-col">
-          <span className="text-xs font-bold text-blue-400 uppercase tracking-tighter">Event</span>
-          <span className="text-sm font-bold text-blue-900">{todo.task}</span>
-        </div>
-        <div className="text-[10px] bg-blue-200 text-blue-700 px-2 py-1 rounded-full font-bold">
-          {(todo.description !== '') || 'No Time Set'}
-        </div>
-      </div>
-    )
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging
+  } = useSortable({ id: todo.id })
+
+  const style = {
+    transform: CSS.Translate.toString(transform), // Translate is smoother than Transform
+    transition,
+    zIndex: isDragging ? 100 : 1,
+    opacity: isDragging ? 0.6 : 1,
+    scale: isDragging ? 1.02 : 1
   }
+
+  if (context === null) throw new Error(errors.ContextExist)
   return (
     <div
+      ref={setNodeRef}
+      style={style}
+      {...attributes}
+      {...listeners}
       className={`
         group relative w-full bg-white rounded-[1.5rem] p-4 
         border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-200 
