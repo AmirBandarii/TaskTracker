@@ -1,11 +1,10 @@
-import React, { type FC } from 'react'
+import React, { type FC, useContext } from 'react'
 import type { ITodo } from '../libs/types/todo'
-import alarm from '../libs/icons/alarm.png'
 import Tooltip from '../libs/tooltip/Tooltip'
-import description from '../libs/icons/description.png'
-import edit from '../libs/icons/edit.png'
-import trash from '../libs/icons/trash.png'
-import { useDraggable } from '@dnd-kit/core'
+import { FileSearchCorner, SquarePen, Shredder } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { errors } from '../libs/messages/errors'
+import TodoContext from '../libs/context/TodoContext'
 
 interface ITaskCardProps {
   id: string
@@ -19,118 +18,95 @@ interface ITaskCardProps {
   todo: ITodo
 }
 
-const TaskCard: FC< ITaskCardProps> = (
-  {
-    id,
-    isEdit,
-    handleEditClick,
-    handleChangeEdit,
-    toggleDescription,
-    isDescription,
-    handleBlur,
-    removeTodo,
-    todo
-  }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: todo.id
-  })
-  const style = transform !== null && transform !== undefined
-    ? {
-        transform: `translate(${transform.x}px, ${transform.y}px)`
-      }
-    : undefined
-  const renderTodoContent = (todo: ITodo): React.JSX.Element | null => {
-    if (id === 'TIME') {
-      return (
-        <div className="flex flex-row w-full items-center justify-center pb-4">
-          <img className="w-10 h-10" src={alarm} alt="alarm" />
-          <span className="text-black lg:font-bold  ">{todo.date}</span>
+const TaskCard: FC<ITaskCardProps> = ({
+  id, isEdit, handleEditClick, handleChangeEdit,
+  toggleDescription, isDescription, handleBlur, removeTodo, todo
+}) => {
+  const context = useContext(TodoContext)
+  if (context === null) throw new Error(errors.ContextExist)
+  if (id === 'Active') {
+    return (
+      <div
+        className="group flex items-center justify-between p-4 rounded-2xl bg-blue-50/50 border border-blue-200 backdrop-blur-sm shadow-sm hover:shadow-md transition-all cursor-grab"
+      >
+        <div className="flex flex-col">
+          <span className="text-xs font-bold text-blue-400 uppercase tracking-tighter">Event</span>
+          <span className="text-sm font-bold text-blue-900">{todo.task}</span>
         </div>
-      )
-    }
-    if (id === 'TASK') {
-      return (
-        <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="flex items-center justify-between my-2 cursor-grab border-2 p-2 sm:w-44 w-64 rounded-full border-copperCanyon bg-goldenSandstone">
-          <Tooltip text="Description">
-            <img
-              className="w-6 cursor-pointer "
-              src={description}
-              alt="description"
-              onClick={() => { toggleDescription(todo.id) }}
-            />
-          </Tooltip>
-          {isEdit[todo.id]
-            ? (
-              <input
-                id={todo.id}
-                type="text"
-                aria-label="edit a task"
-                value={todo.task}
-                className=" text-base font-medium text-gray-900 dark:text-white w-36 text-center rounded-lg"
-                placeholder="editTASK"
-                name="task"
-                onChange={(e) => { handleChangeEdit(e, todo.id) }}
-                onBlur={() => { handleBlur(todo.id) }}
-                autoFocus
-              />
-              )
-            : (
-              <div>
-                {isDescription[todo.id] && todo.description.trim() !== ''
-                  ? (
-                    <div className="flex flex-col items-center justify-center text-center">
-                      <div>
-                        <div className="text-black font-bold break-words whitespace-normal w-44 pl-14 pr-14">{todo.task}</div>
-                        <div className="flex-auto items-center text-center item-center">
-                          <hr className="w-32 mx-auto"/>
-                        </div>
-                      </div>
-                      <div className="flex text-center justify-center w-full h-full">
-                        <div
-                          className="break-words whitespace-normal text-slate-700 font-bold w-36 pl-4 pr-4 pb-4 rounded-lg"
-                        >
-                          {todo.description}
-                        </div>
-                      </div>
-                    </div>
-                    )
-                  : (
-                    <div className="w-24 truncate flex-auto text-center">
-                      <div className="text-black font-bold">{todo.task}</div>
-                    </div>
-                    )}
-              </div>
-              )}
-          <div className="flex items-center gap-3 cursor-pointer">
-            <Tooltip text="Edit">
-              <img
-                className="w-5 z-50"
-                src={edit}
-                alt="edit"
-                onClick={() => { handleEditClick(todo.id) }}
-              />
-            </Tooltip>
-            <Tooltip text="Delete">
-              <img
-                className="w-5 "
-                src={trash}
-                alt="trash"
-                onClick={() => { removeTodo(todo.id) }}
-              />
-            </Tooltip>
-          </div>
+        <div className="text-[10px] bg-blue-200 text-blue-700 px-2 py-1 rounded-full font-bold">
+          {(todo.description !== '') || 'No Time Set'}
         </div>
-      )
-    }
-    if (id === 'DONE') {
-      return <div ref={setNodeRef} {...listeners} {...attributes} style={style} className="text-black font-bold"></div>
-    }
-    return null
+      </div>
+    )
   }
   return (
-    <div>
-      <div>{renderTodoContent(todo)}
+    <div
+      className={`
+        group relative w-full bg-white rounded-[1.5rem] p-4 
+        border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-200 
+        transition-all duration-300 cursor-grab active:cursor-grabbing
+        ${id === 'DONE' ? 'opacity-75 grayscale-[0.5]' : ''}
+      `}
+    >
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <Tooltip text="Description">
+              <button
+                onClick={(e) => { e.stopPropagation(); toggleDescription(todo.id) }}
+                className="p-1 hover:bg-orange-50 rounded-lg transition-colors"
+              >
+                <FileSearchCorner className="w-5 h-5 opacity-60 hover:opacity-100" />
+              </button>
+            </Tooltip>
+
+            {isEdit[todo.id]
+              ? (
+              <input
+                autoFocus
+                className="bg-slate-50 border-none ring-2 ring-orange-400 rounded-md px-2 py-0.5 text-sm font-semibold w-full outline-none"
+                value={todo.task}
+                onChange={(e) => { handleChangeEdit(e, todo.id) }}
+                onBlur={() => { handleBlur(todo.id) }}
+              />
+                )
+              : (
+              <h3 className={`font-bold text-slate-800 text-sm truncate ${id === 'DONE' ? 'line-through text-slate-400' : ''}`}>
+                {todo.task}
+              </h3>
+                )}
+          </div>
+          <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <button onClick={(e) => { e.stopPropagation(); handleEditClick(todo.id) }} className="p-1.5 hover:bg-slate-100 rounded-full">
+              <SquarePen className="w-4 h-4 opacity-50 hover:opacity-100" />
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); removeTodo(todo.id) }} className="p-1.5 hover:bg-red-50 rounded-full">
+              <Shredder className="w-4 h-4 opacity-50 hover:opacity-100" />
+            </button>
+          </div>
+        </div>
+
+        {/* Animated Description Area */}
+        <AnimatePresence>
+          {isDescription[todo.id] && (todo.description !== '') && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="pt-2 border-t border-slate-100 text-xs text-slate-500 leading-relaxed italic">
+                {todo.description}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
+      {id === 'DONE' && (
+        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg">
+          COMPLETED
+        </div>
+      )}
     </div>
   )
 }

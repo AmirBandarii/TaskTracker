@@ -1,92 +1,155 @@
 import React, { useContext } from 'react'
 import { Helmet } from 'react-helmet-async'
+import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../libs/icons/logo/logo'
-import newTask from '../libs/icons/newTask.png'
 import CreateTodo from './CreateTodo'
 import TodoContext from '../libs/context/TodoContext'
 import { errors } from '../libs/messages/errors'
 import { useHomeHandlers } from '../libs/handlers/useHomeHandlers'
 import { COLUMNS } from '../libs/objects/columns'
 import Columns from './columns/Columns'
-import { type DragEndEvent } from '@dnd-kit/core'
-import { type ITodo } from '../libs/types/todo'
-import { DndContext } from '@dnd-kit/core'
+import { ClipboardPlus } from 'lucide-react'
+import {
+  closestCorners,
+  DndContext,
+  PointerSensor,
+  useSensors,
+  useSensor,
+  type DragEndEvent,
+  TouchSensor,
+  type UniqueIdentifier
+} from '@dnd-kit/core'
+import { arrayMove } from '@dnd-kit/sortable'
+// import { type ITodo } from '../libs/types/todo'
 
 const Home: React.FC = () => {
   const context = useContext(TodoContext)
+
   if (context === null) {
     throw new Error(errors.ContextExist)
   }
-  const { isEdit, isDescription, todos, setTodos } = context
+
+  const { isEdit, isDescription, todos, setTodos, modalShow, setModalShow } = context
   const { removeTodo, handleEditClick, handleBlur, toggleDescription, handleChangeEdit } = useHomeHandlers()
-  const updateTaskStatus = (todoId: string, newStatus: string): void => {
-    setTodos((prevTodos) => prevTodos.map((todo) => todo.id === todoId ? { ...todo, status: newStatus } : todo))
-  }
 
-  function handleDragEnd (event: DragEndEvent): void {
+  // --- Drag and Drop Logic ---
+  const getTaskPos = (id: UniqueIdentifier): number => todos.findIndex((todo) => todo.id === id)
+
+  const handleDragEnd = (event: DragEndEvent): void => {
     const { active, over } = event
-    if (over === null || over === undefined) return
+    if (over == null) return
 
-    const taskId = active.id as string
-    const newStatus = over.id as ITodo['status']
-    updateTaskStatus(taskId, newStatus)
-    setTodos(() => todos.map((todo => todo.id === taskId ? { ...todo, status: newStatus } : todo)))
+    const activeId = active.id
+    const overId = over.id
+
+    if (activeId !== overId) {
+      setTodos((items) => {
+        const oldIndex = getTaskPos(activeId)
+        const newIndex = getTaskPos(overId)
+        return arrayMove(items, oldIndex, newIndex)
+      })
+    }
   }
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250,
+        tolerance: 5
+      }
+    })
+  )
 
   return (
-    <div>
+    <div className="min-h-screen bg-gradient-to-br from-[#E8D5C4] to-[#F8F1F1] text-slate-800 transition-colors duration-500">
       <Helmet>
-        <title>Home</title>
-        <meta name="description" content="You can elegantly organize your tasks, manage them with precision, and effortlessly track their completion status"/>
+        <title>ToDoRise | Smart Task Management</title>
+        <meta name="description" content="Elegantly organize tasks with precision and modern drag-and-drop technology."/>
       </Helmet>
-      <main className="p-5 bg-goldenSandstone min-h-screen lg:w-full">
-        <header className="flex justify-between items-center ">
-          <div className="flex gap-3 items-center">
-            <div>
+
+      <main className="max-w-7xl mx-auto p-4 md:p-8">
+        <header className="flex justify-between items-center mb-10 p-5 bg-white/30 backdrop-blur-md rounded-3xl border border-white/20 ">
+          <div className="flex gap-4 items-center">
+            <motion.div
+              whileHover={{ rotate: 10 }}
+              className="p-2 bg-white rounded-xl shadow-sm"
+            >
               <Logo />
-            </div>
-            <div>
-              <h1 className="font-bold text-2xl">ToDoRise</h1>
-            </div>
+            </motion.div>
+            <h1 className="font-extrabold text-2xl md:text-3xl tracking-tight text-slate-900">
+              ToDoRise
+            </h1>
           </div>
-          <div className="flex gap-5">
-            <span className="font-bold text-xl">Date</span>
-            <span className="font-bold text-xl">Calendar</span>
+
+          <div className="hidden sm:flex gap-6 items-center font-semibold text-slate-600">
+            <div className="flex flex-col items-end">
+              <span className="text-xs uppercase tracking-widest text-slate-400">Current Date</span>
+              <span>{new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}</span>
+            </div>
           </div>
         </header>
 
-        <section className="flex justify-start items-center mt-5 lg:justify-center">
-          <div className="flex flex-col items-center">
-            <div className="p-3">
-              <button type="button" onClick={() => {
-                context?.setModalShow((context?.modalShow) === false)
-              }}>
-                <img className="w-12 lg:w-16 hover:w-20" src={newTask} alt="New Task Icon" />
-              </button>
-              {(context.modalShow === true) ? (<CreateTodo />) : null}
-            </div>
-          </div>
-          <div></div>
-          <div></div>
+        <section className="relative mb-10 flex flex-col items-center">
+          <motion.button
+            whileHover={{ scale: 1.15 }}
+            whileTap={{ scale: 1.10 }}
+            type="button"
+            onClick={() => { setModalShow(modalShow === false) }}
+            className="group relative flex items-center justify-center p-3 rounded-full bg-white/30 hover:bg-white/90 transition-all"
+          >
+            <ClipboardPlus className="size-12 " />
+
+            {/*
+            <img
+              className="w-14 h-14 md:w-16 md:h-16 invert group-hover:rotate-90 transition-transform duration-300"
+              src={newTask}
+              alt="New Task"
+            />
+            */}
+          </motion.button>
+
+          <AnimatePresence>
+            {(modalShow === true) && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 10 }}
+                className="absolute top-20 z-50 w-full max-w-md"
+              >
+                <CreateTodo />
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
-        <div className={' grid auto-cols-auto grid-flow-col justify-center items-center gap-x-4 '}>
-          <DndContext onDragEnd={handleDragEnd}>
-            {COLUMNS.map(column => {
-              return (
-                <div key={column.id}>
-                  <Columns
-                    id={column.id}
-                    title = {column.title}
-                    todos={todos}
-                    handleBlur={handleBlur}
-                    handleChangeEdit={handleChangeEdit}
-                    handleEditClick={handleEditClick}
-                    isDescription={isDescription}
-                    isEdit={isEdit} removeTodo={removeTodo}
-                    toggleDescription={toggleDescription}/>
-                </div>
-              )
-            })}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 overflow-x-auto pb-10">
+          <DndContext
+            collisionDetection={closestCorners}
+            onDragEnd={handleDragEnd}
+            sensors={sensors}
+          >
+            {COLUMNS.map(column => (
+              <motion.div
+                key={column.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="bg-white/40 backdrop-blur-sm p-5 rounded-[2.5rem] min-h-[600px] border border-white/40 shadow-xl"
+              >
+                <Columns
+                  id={column.id}
+                  title={column.title}
+                  todos={todos}
+                  handleBlur={handleBlur}
+                  handleChangeEdit={handleChangeEdit}
+                  handleEditClick={handleEditClick}
+                  isDescription={isDescription}
+                  isEdit={isEdit}
+                  removeTodo={removeTodo}
+                  toggleDescription={toggleDescription}
+                />
+              </motion.div>
+            ))}
           </DndContext>
         </div>
       </main>

@@ -14,6 +14,8 @@ export interface ContextValues {
   setIsEdit: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
   isDescription: Record<string, boolean>
   setIsDescription: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
+  isSameColumn: boolean
+  setIsSameColumn: React.Dispatch<React.SetStateAction<boolean>>
 }
 export interface Props {
   children: ReactNode
