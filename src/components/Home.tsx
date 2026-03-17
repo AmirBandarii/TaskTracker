@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { Helmet } from 'react-helmet-async'
 import { motion, AnimatePresence } from 'framer-motion'
 import Logo from '../libs/icons/logo/logo'
@@ -26,7 +26,6 @@ import { type ITodo } from '../libs/types/todo'
 const Home: React.FC = () => {
   const context = useContext(TodoContext)
   if (context === null) throw new Error(errors.ContextExist)
-
   const { isEdit, isDescription, todos, setTodos, modalShow, setModalShow } = context
   const { removeTodo, handleEditClick, handleBlur, toggleDescription, handleChangeEdit } = useHomeHandlers()
   const findColumn = (id: UniqueIdentifier): UniqueIdentifier | string | null => {
@@ -35,6 +34,9 @@ const Home: React.FC = () => {
     return (task != null) ? task.status : null
   }
 
+  useEffect(() => {
+    localStorage.setItem('todo-app-data', JSON.stringify(todos))
+  }, [todos])
   const handleDragOver = (event: DragOverEvent): void => {
     const { active, over } = event
     if (over == null) return
@@ -69,12 +71,16 @@ const Home: React.FC = () => {
     if (over == null) return
 
     if (active.id !== over.id) {
-      const activeIndex = todos.findIndex((i) => i.id === active.id)
-      const overIndex = todos.findIndex((i) => i.id === over.id)
+      setTodos((items) => {
+        const activeIndex = items.findIndex((i) => i.id === active.id)
+        const overIndex = items.findIndex((i) => i.id === over.id)
 
-      const updated = arrayMove(todos, activeIndex, overIndex)
-      setTodos(updated)
-      localStorage.setItem('todo-app-data', JSON.stringify(updated))
+        const updated = arrayMove(todos, activeIndex, overIndex)
+        localStorage.setItem('todo-app-data', JSON.stringify(updated))
+        return updated
+      })
+    } else {
+      localStorage.setItem('todo-app-data', JSON.stringify(todos))
     }
   }
 
