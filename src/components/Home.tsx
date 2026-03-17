@@ -35,7 +35,6 @@ const Home: React.FC = () => {
     return (task != null) ? task.status : null
   }
 
-  // 1. Logic for moving between columns (Cross-Column)
   const handleDragOver = (event: DragOverEvent): void => {
     const { active, over } = event
     if (over == null) return
@@ -43,7 +42,6 @@ const Home: React.FC = () => {
     const activeId = active.id
     const overId = over.id
 
-    // Find the source and destination containers (columns)
     const activeContainer = findColumn(activeId)
     const overContainer = findColumn(overId)
 
@@ -55,22 +53,17 @@ const Home: React.FC = () => {
       const activeIndex = prev.findIndex((i) => i.id === activeId)
       const overIndex = prev.findIndex((i) => i.id === overId)
 
-      // Create a new array to avoid direct mutation
       const newTodos = [...prev]
 
-      // Update the status of the dragged item to the new column's status
       newTodos[activeIndex] = {
         ...newTodos[activeIndex],
         status: overContainer as ITodo['status']
       }
 
-      // Move the item to the new index position in the array immediately
-      // This prevents the "jumping" effect between columns
       return arrayMove(newTodos, activeIndex, overIndex === -1 ? activeIndex : overIndex)
     })
   }
 
-  // 2. Logic for final sorting (Up/Down)
   const handleDragEnd = (event: DragEndEvent): void => {
     const { active, over } = event
     if (over == null) return
@@ -88,12 +81,12 @@ const Home: React.FC = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8 // Drag only starts after moving 8px
+        distance: 8
       }
     }),
     useSensor(TouchSensor, {
       activationConstraint: {
-        delay: 250, // For mobile: hold for 250ms to drag
+        delay: 250,
         tolerance: 5
       }
     })
