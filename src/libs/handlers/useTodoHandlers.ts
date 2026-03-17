@@ -10,7 +10,7 @@ export const useTodoHandlers = (): ITodoHandlers => {
   const context = useContext(TodoContext)
   if (context == null) throw new Error(errors.ContextExist)
 
-  const { setTodo, setDescription, todos, setTodos, todo, description } = context
+  const { setTodo, setDescription, todos, setTodos, todo, description, isHighPriority } = context
 
   const handleChangeTodo = (e: React.ChangeEvent<HTMLInputElement>): void => {
     setTodo(e.target.value)
@@ -26,21 +26,18 @@ export const useTodoHandlers = (): ITodoHandlers => {
 
     if (trimmedTask.length > 0) {
       const newTodo: ITodo = {
-        // Use modern Web Crypto API for unique IDs instead of Math.random
         id: crypto.randomUUID(),
         task: trimmedTask,
         description: description.trim(),
         status: 'TASK',
-        date: formattedDate()
+        date: formattedDate(),
+        isHighPriority
       }
-
       const newTodoList = [...todos, newTodo]
       setTodos(newTodoList)
 
-      // Save to localStorage
       localStorage.setItem('todo-app-data', JSON.stringify(newTodoList))
 
-      // Clean up form
       setTodo('')
       setDescription('')
     }

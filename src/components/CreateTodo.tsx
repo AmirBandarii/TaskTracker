@@ -10,7 +10,7 @@ const CreateTodo: React.FC = () => {
   const context = useContext(TodoContext)
 
   if (context == null) throw new Error(errors.ContextExist)
-  const { setModalShow, todo } = context
+  const { setModalShow, todo, isHighPriority, setIsHighPriority } = context
 
   return (
     <>
@@ -78,6 +78,8 @@ const CreateTodo: React.FC = () => {
                 <input
                   id="must-todo"
                   type="checkbox"
+                  checked={isHighPriority}
+                  onChange={(e) => { setIsHighPriority(e.target.checked) }}
                   className="w-5 h-5 rounded-lg border-slate-300 text-orange-500 focus:ring-orange-400 transition-all cursor-pointer"
                 />
                 <label htmlFor="must-todo" className="text-sm font-bold text-slate-600 cursor-pointer">
