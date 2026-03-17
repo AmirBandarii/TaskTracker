@@ -61,7 +61,7 @@ const Columns: React.FC<ColumnProps> = ({
               {filteredTodos.map((todo) => (
                 <motion.div
                   key={todo.id}
-                  layout // Smoothly animates position changes
+                  layout
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95 }}

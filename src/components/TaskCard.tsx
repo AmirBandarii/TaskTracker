@@ -1,6 +1,5 @@
 import React, { type FC, useContext } from 'react'
 import type { ITodo } from '../libs/types/todo'
-import Tooltip from '../libs/tooltip/Tooltip'
 import { FileSearchCorner, SquarePen, Shredder } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { errors } from '../libs/messages/errors'
@@ -35,7 +34,7 @@ const TaskCard: FC<ITaskCardProps> = ({
   } = useSortable({ id: todo.id })
 
   const style = {
-    transform: CSS.Translate.toString(transform), // Translate is smoother than Transform
+    transform: CSS.Translate.toString(transform),
     transition,
     zIndex: isDragging ? 100 : 1,
     opacity: isDragging ? 0.6 : 1,
@@ -59,36 +58,62 @@ const TaskCard: FC<ITaskCardProps> = ({
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 overflow-hidden">
-            <Tooltip text="Description">
-              <button
-                onClick={(e) => { e.stopPropagation(); toggleDescription(todo.id) }}
-                className="p-1 hover:bg-orange-50 rounded-lg transition-colors"
-              >
-                <FileSearchCorner className="w-5 h-5 opacity-60 hover:opacity-100" />
-              </button>
-            </Tooltip>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleDescription(todo.id)
+              }}
+              className="p-1 hover:bg-orange-50 rounded-lg transition-colors"
+            >
+              <FileSearchCorner className="w-5 h-5 opacity-60 hover:opacity-100" />
+
+            </button>
 
             {isEdit[todo.id]
               ? (
-              <input
-                autoFocus
-                className="bg-slate-50 border-none ring-2 ring-orange-400 rounded-md px-2 py-0.5 text-sm font-semibold w-full outline-none"
-                value={todo.task}
-                onChange={(e) => { handleChangeEdit(e, todo.id) }}
-                onBlur={() => { handleBlur(todo.id) }}
-              />
+                <input
+                  autoFocus
+                  className="bg-slate-50 border-none ring-2 ring-orange-400 rounded-md ring-inset px-2 py-1 text-sm font-semibold w-full outline-none"
+                  value={todo.task}
+                  onChange={(e) => {
+                    handleChangeEdit(e, todo.id)
+                  }}
+                  onBlur={() => {
+                    handleBlur(todo.id)
+                  }}
+                />
                 )
               : (
-              <h3 className={`font-bold text-slate-800 text-sm truncate ${id === 'DONE' ? 'line-through text-slate-400' : ''}`}>
-                {todo.task}
-              </h3>
+                <h3
+                  className={`font-bold text-slate-800 text-sm truncate ${id === 'DONE' ? 'line-through text-slate-400' : ''}`}>
+                  {todo.task}
+                </h3>
                 )}
           </div>
           <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-            <button onClick={(e) => { e.stopPropagation(); handleEditClick(todo.id) }} className="p-1.5 hover:bg-slate-100 rounded-full">
+            <button
+              onPointerDown={(e) => {
+                e.stopPropagation()
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                handleEditClick(todo.id)
+              }}
+              className="p-1.5 hover:bg-slate-100 rounded-full"
+            >
               <SquarePen className="w-4 h-4 opacity-50 hover:opacity-100" />
             </button>
-            <button onClick={(e) => { e.stopPropagation(); removeTodo(todo.id) }} className="p-1.5 hover:bg-red-50 rounded-full">
+            <button
+              onPointerDown={(e) => {
+                e.stopPropagation()
+              }}
+              onClick={(e) => {
+                e.stopPropagation()
+                removeTodo(todo.id)
+              }}
+              className="p-1.5 hover:bg-red-50 rounded-full"
+            >
               <Shredder className="w-4 h-4 opacity-50 hover:opacity-100" />
             </button>
           </div>
@@ -107,11 +132,12 @@ const TaskCard: FC<ITaskCardProps> = ({
                 {todo.description}
               </div>
             </motion.div>
-          )}
+          )}*
         </AnimatePresence>
       </div>
       {id === 'DONE' && (
-        <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg">
+        <div
+          className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-lg">
           COMPLETED
         </div>
       )}
