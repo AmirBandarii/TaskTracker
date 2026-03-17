@@ -42,6 +42,7 @@ const TaskCard: FC<ITaskCardProps> = ({
   }
 
   if (context === null) throw new Error(errors.ContextExist)
+  const isHigh = todo.isHighPriority
   return (
     <div
       ref={setNodeRef}
@@ -53,8 +54,17 @@ const TaskCard: FC<ITaskCardProps> = ({
         border border-slate-200 shadow-sm hover:shadow-xl hover:border-orange-200 
         transition-all duration-300 cursor-grab active:cursor-grabbing
         ${id === 'DONE' ? 'opacity-75 grayscale-[0.5]' : ''}
+        ${isDragging ? 'opacity-50' : 'opacity-100'}
+        ${isHigh
+        ? 'border-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.1)]'
+        : 'border-slate-100 shadow-sm'}
       `}
     >
+      {isHigh && (
+        <div className="absolute top-0 left-10 bg-orange-500 text-white text-[8px] font-black px-2 py-0.5 rounded-b-lg uppercase tracking-tighter shadow-sm">
+          Urgent
+        </div>
+      )}
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 overflow-hidden">

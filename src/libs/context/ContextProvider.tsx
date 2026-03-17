@@ -8,17 +8,18 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
   const [todo, setTodo] = useState<string | undefined>('')
   const [description, setDescription] = useState<string>('')
   const [todos, setTodos] = useState<ITodo[]>(() => {
-    const saved = localStorage.getItem('todo-app-data');
+    const saved = localStorage.getItem('todo-app-data')
 
     if (saved == null) return []
 
     try {
-      return JSON.parse(saved);
+      return JSON.parse(saved)
     } catch {
       return []
     }
   })
 
+  const [isHighPriority, setIsHighPriority] = useState(false)
   const [isEdit, setIsEdit] = React.useState<Record<string, boolean>>({})
   const [isDescription, setIsDescription] = React.useState<Record<string, boolean>>({})
   const [isSameColumn, setIsSameColumn] = React.useState<boolean>(false)
@@ -38,7 +39,9 @@ const ContextProvider: React.FC<Props> = ({ children }) => {
     isDescription,
     setIsDescription,
     isSameColumn,
-    setIsSameColumn
+    setIsSameColumn,
+    isHighPriority,
+    setIsHighPriority
   }}
   >
       {children}

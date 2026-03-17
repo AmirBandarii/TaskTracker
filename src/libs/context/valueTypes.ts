@@ -16,6 +16,8 @@ export interface ContextValues {
   setIsDescription: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
   isSameColumn: boolean
   setIsSameColumn: React.Dispatch<React.SetStateAction<boolean>>
+  isHighPriority: boolean
+  setIsHighPriority: React.Dispatch<React.SetStateAction<boolean>>
 }
 export interface Props {
   children: ReactNode
