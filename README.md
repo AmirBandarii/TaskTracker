@@ -6,7 +6,7 @@ A modern and interactive Task Tracker (Todo List) application that helps you man
 
 📝 Create Tasks
 
-Add new todo items بسهولة
+Add new todo items 
 
 Include detailed descriptions for each task
 
