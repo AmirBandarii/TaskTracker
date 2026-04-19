@@ -96,16 +96,6 @@ Your tasks will automatically persist in local storage
 
 🚧 Future Improvements
 
-🔐 User authentication
-
-☁️ Backend integration (cloud storage)
-
-📅 Due dates & reminders
-
-🏷️ Tags & filtering system
-
-📱 Mobile optimization enhancements
-
 🤝 Contributing
 
 Contributions are welcome! Feel free to fork this repo and submit a pull request.
